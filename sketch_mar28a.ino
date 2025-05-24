@@ -27,6 +27,11 @@
 #define IR_SEND_PIN         3
 #define IR_RECEIVE_PIN      5 
 #define _IR_TIMING_TEST_PIN 7
+// note: the receive pin OF DFR1173 is not connected / not used
+#define SOUND_SEND_PIN         2
+#define SOUND_RECEIVE_PIN      4 
+#define AUDIO_READ_DELAY    25
+
 
 //#define LED_PIN     6
 //#define LED_COUNT   6
@@ -47,9 +52,13 @@
 //#include <Adafruit_NeoPixel.h>  
 #include <Arduino.h>
 #include <Servo.h>
+// USE SOFTWARE SERIAL FOR DFR1173 SO USB NOT AFFECTED
+#include <SoftwareSerial.h>
 
 //Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
 Servo myservo;
+SoftwareSerial *audioSerial;
+
 
 // >>>>>>>>>>>>>>>>>>>>>>>>>>> GAME PARAMETERS <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 #define DEBOUNCE_DELAY 20
@@ -92,10 +101,12 @@ unsigned long timeoutStartTime = - HIT_TIMEOUT - 1000;
 uint8_t sCommand;                            // IR command being sent
 uint8_t rcvCommand1;                         // IR command being recieved
 uint8_t rcvCommand2;                         // IR command being recieved
+uint8_t soundCommand;                        // Audio file number for shoot
+uint8_t dieCommand;                          // Audio file number for die
+
 
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> SETUP <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 void setup() {
-
   // Move Goggles to start config
   myservo.attach(SERVO_PIN);
   myservo.write(SERVO_INITIAL_POS);
@@ -124,18 +135,32 @@ void setup() {
     sCommand = 0x34;
     rcvCommand1 = 0x35;
     rcvCommand2 = 0x36;
+    soundCommand =2;
+    dieCommand =6;
   } else if (team == 2) {
     sCommand = 0x35;
     rcvCommand1 = 0x34;
     rcvCommand2 = 0x36;
+    soundCommand =3;
+    dieCommand =7;
   } else {
     sCommand = 0x36;
     rcvCommand1 = 0x34;
     rcvCommand2 = 0x35;
+    soundCommand =5;
+    dieCommand =8;
   }
 
   Serial.begin(115200);
   IrReceiver.begin(IR_RECEIVE_PIN, ENABLE_LED_FEEDBACK);
+
+  audioSerial = &SoftwareSerial(SOUND_RECEIVE_PIN,SOUND_SEND_PIN);
+  audioSerial->begin(9600);
+  //delay(800); // Give the module some time to initialize
+  set_volume(20);
+  delay(50);
+  play_track(1); //  protongun_powerup
+
   /*
   strip.begin();
   strip.show();
@@ -148,7 +173,7 @@ void setup() {
 void loop() {
   unsigned long currentMillis = millis();
 
-  handleTrigger(currentMillis);
+  handleTrigger(currentMillis, false);
   handleIRReception();
   //UpdateLights(currentMillis);
   /*ReadReloadButton(currentMillis);
@@ -158,9 +183,60 @@ void loop() {
   }*/
 }
 
+// >>>>>>>>>>>>>>>>>>>>>>>>>>>> AUDIO SOUND EFFECT FUNCTIONS FOR DFR1173 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+// Helper function to send a command to the MP3 module
+void send_audio_command(uint8_t command[], size_t length) {
+  for (size_t i = 0; i < length; i++) {
+    audioSerial->write(command[i]);
+  }
+}
+
+void get_audio_command(uint8_t command[], size_t length, uint8_t *result) {
+  short count=0;
+  for (size_t i = 0; i < length; i++) {
+    audioSerial->write(command[i]);
+  }
+  while (audioSerial->available() == 0)
+  {
+    delay(AUDIO_READ_DELAY);
+    count++;
+    if (count>30)
+    {
+      *result=0;
+      return;
+    }
+  }
+  *result = audioSerial->read();
+}
+
+// Volume Control Functions
+void set_volume(uint8_t level) {
+  if (level > 30) {
+    //Serial.println("Illegal volume %d, Volume level must be between 0 and 30.",(int)level);
+    return;
+  }
+  uint8_t command[] = {0x7E, 0x06, 0x00, 0x02, 0x01, level, 0xEF};
+  send_audio_command(command, sizeof(command));
+  return;
+}
+
+// Playback Control Functions
+void play_track_folder(uint8_t track_number, uint8_t folder_number) {
+  uint8_t command[] = {0x7E, 0x0F, 0x00, 0x02, folder_number, track_number, 0xEF};
+  send_audio_command(command, sizeof(command));
+}
+
+// Playback Control Functions
+void play_track(uint8_t track_number) {
+  play_track_folder(track_number, 2);
+}
+
+
+
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>> GAMEPLAY FUNCTIONS <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 // Read Trigger ----------
-void handleTrigger(unsigned long currentMillis) {
+void handleTrigger(unsigned long currentMillis, bool istimeout) {
   //if (ReadTriggerButton() && buttonWasReleased && ammo > 0 && currentMillis - previousTriggerMillis >= TRIGGER_COOLDOWN) {
   if (ReadTriggerButton() && buttonWasReleased && currentMillis - previousTriggerMillis >= TRIGGER_COOLDOWN) {
     previousTriggerMillis = currentMillis;
@@ -168,8 +244,19 @@ void handleTrigger(unsigned long currentMillis) {
     //isReloading = false;
 
     //digitalWrite(BUZZER_PIN, HIGH);
-    sendIR_Pulse();
-    //UpdateAmmo(false, currentMillis);
+    set_volume(30);
+    if (istimeout)
+    {
+      delay(10);
+      play_track(4); //  alarm
+    }
+    else
+    {
+      sendIR_Pulse(false,false);
+      play_track(soundCommand); // blaster
+      //UpdateAmmo(false, currentMillis);
+    }
+    delay(10);
   } else if (!ReadTriggerButton()) {
     buttonWasReleased = true;
     //digitalWrite(BUZZER_PIN, LOW);
@@ -179,10 +266,12 @@ void handleTrigger(unsigned long currentMillis) {
 }
 
 // Fire "Shot" ----------
-void sendIR_Pulse() {
-  Serial.flush();
-  IrSender.sendNEC(0x00, sCommand, 3);
-  delay(10);
+void sendIR_Pulse(bool doFlush, bool doDelay) {
+  if (doFlush)
+    Serial.flush();
+  IrSender.sendNEC(0x00, sCommand, 1);
+  if (doDelay)
+    delay(10);
 }
 
 // Read incoming message ----------
@@ -206,11 +295,18 @@ void checkPlayerHit() {
 void markHit() {
   // get current time
   timeoutStartTime = millis();
+  unsigned long currentMillis = millis();
 
+  set_volume(30);
+  delay(10);
+  play_track(dieCommand); // r2d2 hit by jawas
   // move goggles to darken
   myservo.attach(SERVO_PIN);
   myservo.write(SERVO_HIT_POS);
   //digitalWrite(BUZZER_PIN, HIGH);
+  //delay(10);
+  //delay(500);
+
 
   // flash LEDs and vibrate buzzer during timeout. !!! section is blocking !!!
   while (millis() - timeoutStartTime < HIT_TIMEOUT) {
@@ -222,9 +318,16 @@ void markHit() {
     strip.show();
     */
 
+    currentMillis = millis();
+    handleTrigger(currentMillis, true);
+
+
     // In last 20% of timeout, begin to move servo towards starting position
-    int timeVal = (millis() - timeoutStartTime) / 100;
-    if (millis() > timeoutStartTime + (HIT_TIMEOUT * (4.0 / 5.0))) {
+    // 20% is too soon, the glasses become clear, but the trigger won't soon
+    // which is really obvious with the buzzer 'no shoot' sound.  
+    // even 5% is too mucn, try making it 2%
+    //int timeVal = (millis() - timeoutStartTime) / 100;
+    if (millis() - timeoutStartTime >= (HIT_TIMEOUT * (0.98))) {
       myservo.write(SERVO_INITIAL_POS);
     }
 
