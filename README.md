@@ -14,11 +14,11 @@ My code includes a couple of 'fixes' to the original code:
 1. in sendIR_Pulse() sending 3 pulses seems like overkill, and can result in dead time in gameplay where two people can shoot each other and not get any hits.  This is reduced to a single pulse with IrSender.sendNEC()
 2. in markHit() the servos are moved back when 80% of the time is up, but this results in dead time in gameplay while your glasses are clear, but you cannot shoot.  I've reduced it from 20% to 2%.
 
-You can see a 'diff' to the original with [commit 7469543](../commit/7469543)
+You can see a 'diff' to the original with [commit 7469543](../../commit/7469543)
 
 To implement this hack:
 - [ ] Assemble Hack Pack Build #5 [Laser Tag](https://www.crunchlabs.com/products/laser-tag) kit.
-- [ ] One [DFR1173](https://www.dfrobot.com/product-2862.html) formatted and loaded with [contents of ZIP](../raw/refs/heads/main/DFR1173-with-die-sounds.zip)
+- [ ] One [DFR1173](https://www.dfrobot.com/product-2862.html) formatted and loaded with [contents of ZIP](../../raw/refs/heads/main/DFR1173-with-die-sounds.zip)
 - [ ] 3 long (40cm) dupont wires
 - [ ] Arduino IDE with the original sketch, compiling and uploading (note: you need to remove the Arduino Nano from the gun)
 - [ ] Copy the [new sketch](../blob/main/sketch_mar28a.ino) into the Ardunio IDE, compile and upload
