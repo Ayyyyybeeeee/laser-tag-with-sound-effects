@@ -41,6 +41,10 @@ To implement this hack:
 - [ ] The other end of the dupont wires go to the crunchlabs breadboard pin 2, and anywhere on the red (5v) and black gnd) rails
 - [ ] Turn it on and test it!
 
+Here is a photo of the simplest way to attach [DFR1173](https://www.dfrobot.com/product-2862.html) to the battery pack [Full Res Image](https://github.com/user-attachments/assets/3f237a16-3060-4298-a4bb-19fde553ac99).
+
+![Image-15](https://github.com/user-attachments/assets/92859fb6-1595-40d2-860d-9b48af3c0e74)
+
 If you need any help you can contact me on the [Hack Pack Discord](https://discord.gg/hackpack)
 
 Enjoy!
