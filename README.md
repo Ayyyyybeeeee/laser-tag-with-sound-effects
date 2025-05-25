@@ -17,7 +17,7 @@ You can choose whatever sounds you want by loading the MP3 files on to the DFR11
 * `E:\02\002_blt1.mp3` - :gun: Blaster sound from Star Wars[^2]
 * `E:\02\003_blt2.mp3` - :gun: Blaster not violent[^3]
 * `E:\02\004_beep.mp3` - :rotating_light: Proton pack overheat sound from Ghostbusters[^4]
-* `E:\02\005_blt3.mp3` - :gun: TIE Balster Canon from Star Wards[^5]
+* `E:\02\005_blt3.mp3` - :gun: TIE Balster Canon from Star Wars[^5]
 * `E:\02\006_die1.mp3` - :fire: R2D2 sound from Star Wars[^6]
 * `E:\02\007_die2.mp3` - :fire: R2D2 sound from Star Wars[^7]
 * `E:\02\008_die3.mp3` - :fire: R2D2 sound from Star Wars[^8]
