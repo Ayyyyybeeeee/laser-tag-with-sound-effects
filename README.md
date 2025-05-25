@@ -2,11 +2,26 @@
 
 This is a hack (or a mod) for the [Crunchlabs](https://www.crunchlabs.com/) Hack Pack Build #5 [Laser Tag](https://www.crunchlabs.com/products/laser-tag) kit.
 
-This hack adds sound effects using [DFR1173](https://www.dfrobot.com/product-2862.html) - a startup sound, a shoot sound (one for each team), a sound when you are 'hit' (one for each team) and an alarm sound if you try and shoot when in timeout.  I’m using the proton pack startup sound from ghostbusters, and various other MP3 files.
+This hack adds sound effects using [DFR1173](https://www.dfrobot.com/product-2862.html) :
+- startup sound
+- shoot sound (one for each team)
+- sound when you are 'hit' (one for each team) 
+- an alarm sound if you try and shoot when in timeout
 
 I used the [DFR1173](https://www.dfrobot.com/product-2862.html) sound module from DFROBOT, possibly the least documented arduino module ever.  Most of the time on this project was dedicated to making this thing work.
 
 The sound files I used are in the ZIP file.  I also found it helpful to format the DFR1173 first using windows format command from DOS prompt.  It's really important that the bit rate does not exceed 192, and the filenames are in a numbered (two digit) sub-folder, and the filenames begin with a three digit number and the total filename length does not exceed 12 bytes.  You load the sound files using a special USB cable that comes with the DFR1173 (make sure the arrow on the cable is pointing to the 5V pin).
+
+You can choose whatever sounds you want by loading the MP3 files on to the DFR1173:
+* `E:\02\001_powr.mp3` - :battery: Proton pack startup sound from Ghostbusters[^1] 
+* `E:\02\002_blt1.mp3` - :gun: Blaster sound from Star Wars[^2]
+* `E:\02\003_blt2.mp3` - :gun: Blaster not violent[^3]
+* `E:\02\004_beep.mp3` - :rotating_light: Proton pack overheat sound from Ghostbusters[^4]
+* `E:\02\005_blt3.mp3` - :gun: TIE Balster Canon from Star Wards[^5]
+* `E:\02\006_die1.mp3` - :fire: R2D2 sound from Star Wars[^6]
+* `E:\02\007_die2.mp3` - :fire: R2D2 sound from Star Wars[^7]
+* `E:\02\008_die3.mp3` - :fire: R2D2 sound from Star Wars[^8]
+
 
 I simply taped the DFR1173 on to the front of the battery with electrical tape.  An upgrade would be to 3D print a proper holder for this, or even use heatshrink tubing.  I've used 3 long (40cm) dupont wires to take the 5v/gnd and signal from the crunchlabs breadboard to the DFR1173 5v, gnd and Rx pins.
 
@@ -18,7 +33,7 @@ You can see a 'diff' to the original with [commit 7469543](https://github.com/Ay
 
 To implement this hack:
 - [ ] Assemble Hack Pack Build #5 [Laser Tag](https://www.crunchlabs.com/products/laser-tag) kit.
-- [ ] One [DFR1173](https://www.dfrobot.com/product-2862.html) formatted and loaded with [contents of ZIP](../../raw/refs/heads/main/DFR1173-with-die-sounds.zip)
+- [ ] One [DFR1173](https://www.dfrobot.com/product-2862.html) formatted and loaded with [contents of ZIP](../../raw/refs/heads/main/DFR1173-with-die-sounds.zip) - ensure the arrow on the cable is pointing to the 5V pin.
 - [ ] 3 long (40cm) dupont wires
 - [ ] Arduino IDE with the original sketch, compiling and uploading (note: you need to remove the Arduino Nano from the gun)
 - [ ] Copy the [new sketch](../main/sketch_mar28a.ino) into the Ardunio IDE, compile and upload
@@ -30,3 +45,11 @@ If you need any help you can contact me on the [Hack Pack Discord](https://disco
 
 Enjoy!
 
+[^1]: [SD Card Files/00/094 protongun_powerup short.mp3](https://www.gbfans.com/shop/amplified-sound-board/)
+[^2]: [Star Wars Blaster](https://www.myinstants.com/en/instant/star-wars-blaster-42067/)
+[^3]: [Blaster not violent](https://www.myinstants.com/en/instant/blaster-not-violent-bruh-97990//)
+[^4]: [SD Card Files/00/045 overheat beeps 3.mp3](https://www.gbfans.com/shop/amplified-sound-board/)
+[^5]: [TIE blaster cannon](https://www.101soundboards.com/sounds/24145051-tie-blaster-cannon)
+[^6]: [R2-D2 Sounds: Star Wars 15](https://www.101soundboards.com/sounds/36614-15/)
+[^7]: [R2-D2 Sounds: Star Wars 14](https://www.101soundboards.com/sounds/36613-14/)
+[^8]: [R2-D2 Sounds: Star Wars 13](https://www.101soundboards.com/sounds/36612-13/)
