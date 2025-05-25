@@ -10,18 +10,18 @@ The sound files I used are in the ZIP file.  I also found it helpful to format t
 
 I simply taped the DFR1173 on to the front of the battery with electrical tape.  An upgrade would be to 3D print a proper holder for this, or even use heatshrink tubing.  I've used 3 long (40cm) dupont wires to take the 5v/gnd and signal from the crunchlabs breadboard to the DFR1173 5v, gnd and Rx pins.
 
-My code includes a couple of 'fixes' to the original code.    
+My code includes a couple of 'fixes' to the original code:
 1. in sendIR_Pulse() sending 3 pulses seems like overkill, and can result in dead time in gameplay where two people can shoot each other and not get any hits.  This is reduced to a single pulse with IrSender.sendNEC()
 2. in markHit() the servos are moved back when 80% of the time is up, but this results in dead time in gameplay while your glasses are clear, but you cannot shoot.  I've reduced it from 20% to 2%.
 
-You can see a 'diff' to the original code here [commit 7469543](/commit/746954338773ec1b5f039d2f221b5ff91216cee8)
+You can see a 'diff' to the original with [commit 7469543](../commit/7469543)
 
 To implement this hack:
 - [ ] Assemble Hack Pack Build #5 [Laser Tag](https://www.crunchlabs.com/products/laser-tag) kit.
-- [ ] One [DFR1173](https://www.dfrobot.com/product-2862.html) formatted and loaded with [contents of ZIP](/raw/refs/heads/main/DFR1173-with-die-sounds.zip)
+- [ ] One [DFR1173](https://www.dfrobot.com/product-2862.html) formatted and loaded with [contents of ZIP](../raw/refs/heads/main/DFR1173-with-die-sounds.zip)
 - [ ] 3 long (40cm) dupont wires
 - [ ] Arduino IDE with the original sketch, compiling and uploading (note: you need to remove the Arduino Nano from the gun)
-- [ ] Copy the [new sketch](/sketch_mar28a.ino) into the Ardunio IDE, compile and upload
+- [ ] Copy the [new sketch](../blob/main/sketch_mar28a.ino) into the Ardunio IDE, compile and upload
 - [ ] Connect dupont wires to the 5v, gnd and Rx pins on the DFR1173
 - [ ] The other end of the dupont wires go to the crunchlabs breadboard pin 2, and anywhere on the red (5v) and black gnd) rails
 - [ ] Turn it on and test it!
