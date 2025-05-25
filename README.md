@@ -14,7 +14,7 @@ My code includes a couple of 'fixes' to the original code:
 1. in sendIR_Pulse() sending 3 pulses seems like overkill, and can result in dead time in gameplay where two people can shoot each other and not get any hits.  This is reduced to a single pulse with IrSender.sendNEC()
 2. in markHit() the servos are moved back when 80% of the time is up, but this results in dead time in gameplay while your glasses are clear, but you cannot shoot.  I've reduced it from 20% to 2%.
 
-You can see a 'diff' to the original with commit 7469543
+You can see a 'diff' to the original with [commit 7469543](https://github.com/Ayyyyybeeeee/laser-tag-with-sound-effects/commit/7469543)
 
 To implement this hack:
 - [ ] Assemble Hack Pack Build #5 [Laser Tag](https://www.crunchlabs.com/products/laser-tag) kit.
